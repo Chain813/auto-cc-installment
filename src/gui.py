@@ -7,8 +7,6 @@ import platform
 import subprocess
 import shutil
 import os
-import sys
-from typing import Optional
 
 
 class DeployGUI:
@@ -467,7 +465,7 @@ class DeployGUI:
             self.log("")
             self.log("使用方法:")
             self.log(f'  $env:ANTHROPIC_API_KEY = "{api_key}"')
-            self.log(f'  $env:ANTHROPIC_BASE_URL = "https://api.deepseek.com/anthropic"')
+            self.log('  $env:ANTHROPIC_BASE_URL = "https://api.deepseek.com/anthropic"')
             self.log(f"  claude --model {model}")
             self.log("=" * 50)
 
@@ -475,9 +473,9 @@ class DeployGUI:
             self.root.after(0, lambda: self.launch_btn.config(state=tk.NORMAL))
             self.root.after(0, lambda: messagebox.showinfo("成功", "部署完成！"))
 
-        except Exception as e:
-            self.log(f"\n✗ 部署失败: {e}")
-            self.root.after(0, lambda: messagebox.showerror("错误", f"部署失败: {e}"))
+        except Exception as exc:
+            self.log(f"\n✗ 部署失败: {exc}")
+            self.root.after(0, lambda err=exc: messagebox.showerror("错误", f"部署失败: {err}"))
 
         finally:
             self.is_deploying = False
@@ -605,7 +603,7 @@ class DeployGUI:
                 base_url="https://api.deepseek.com/v1"
             )
 
-            response = client.chat.completions.create(
+            client.chat.completions.create(
                 model="deepseek-v4-flash",
                 messages=[{"role": "user", "content": "Hello"}],
                 max_tokens=10
@@ -655,7 +653,7 @@ class DeployGUI:
         # 创建启动脚本（从配置文件读取，不硬编码 API Key）
         if platform.system() == "Windows":
             if auto_mode:
-                script = f'''@echo off
+                script = '''@echo off
 echo Claude Code + DeepSeek API (智能模式)
 echo.
 echo 智能模型选择说明:
@@ -668,7 +666,7 @@ echo.
 pause
 '''
             else:
-                script = f'''@echo off
+                script = '''@echo off
 echo Claude Code + DeepSeek API
 echo.
 echo 请确保已运行: python -m src.main setup-env
@@ -679,7 +677,7 @@ pause
             script_path = "launch_claude.bat"
         else:
             if auto_mode:
-                script = f'''#!/bin/bash
+                script = '''#!/bin/bash
 echo "Claude Code + DeepSeek API (智能模式)"
 echo ""
 echo "智能模型选择说明:"
@@ -691,7 +689,7 @@ echo "或手动设置环境变量 ANTHROPIC_API_KEY 和 ANTHROPIC_BASE_URL"
 echo ""
 '''
             else:
-                script = f'''#!/bin/bash
+                script = '''#!/bin/bash
 echo "Claude Code + DeepSeek API"
 echo ""
 echo "请确保已运行: python -m src.main setup-env"
@@ -721,7 +719,7 @@ echo ""
 def main():
     """主函数"""
     root = tk.Tk()
-    app = DeployGUI(root)
+    DeployGUI(root)
     root.mainloop()
 
 

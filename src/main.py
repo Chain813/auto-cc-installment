@@ -8,7 +8,6 @@ from rich.prompt import Confirm
 from .installer import ClaudeCodeInstaller
 from .api_config import APIConfig
 from .deepseek_client import DeepSeekClient
-from .model_selector import auto_select_model, ModelSelector
 from .utils import print_success, print_error, print_info, print_warning
 
 console = Console()
@@ -77,7 +76,7 @@ def setup_env():
         from openai import OpenAI
         try:
             client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
-            response = client.chat.completions.create(
+            client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": "Say OK"}],
                 max_tokens=5

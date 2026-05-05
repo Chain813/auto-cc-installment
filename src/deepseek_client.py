@@ -1,10 +1,8 @@
 """DeepSeek API 客户端模块"""
 
-import time
-from typing import Optional, List, Dict, Any, Generator
+from typing import Optional, List, Dict, Generator
 from openai import OpenAI
 from rich.console import Console
-from rich.markdown import Markdown
 from .api_config import APIConfig
 from .model_selector import auto_select_model, ModelSelector
 from .utils import print_error, print_success, print_info
@@ -55,7 +53,7 @@ class DeepSeekClient:
             return False
 
         try:
-            response = self.client.chat.completions.create(
+            self.client.chat.completions.create(
                 model=self.config.get_model(),
                 messages=[{"role": "user", "content": "Hello"}],
                 max_tokens=10

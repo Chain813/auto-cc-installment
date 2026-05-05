@@ -46,8 +46,9 @@ class TestInstallation(unittest.TestCase):
     def test_config_defaults(self):
         """测试默认配置"""
         config = self.config.DEFAULT_CONFIG
-        self.assertEqual(config["deepseek"]["base_url"], "https://api.deepseek.com/v1")
-        self.assertEqual(config["deepseek"]["model"], "deepseek-chat")
+        self.assertEqual(config["deepseek"]["base_url_openai"], "https://api.deepseek.com/v1")
+        self.assertEqual(config["deepseek"]["base_url_anthropic"], "https://api.deepseek.com/anthropic")
+        self.assertEqual(config["deepseek"]["model"], "deepseek-v4-flash")
         self.assertEqual(config["general"]["timeout"], 30)
 
 

@@ -1,6 +1,5 @@
 """Claude Code 安装模块"""
 
-import subprocess
 from rich.console import Console
 from rich.prompt import Confirm, Prompt
 from .utils import (

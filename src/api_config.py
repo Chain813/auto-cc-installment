@@ -2,7 +2,6 @@
 
 import os
 import yaml
-from pathlib import Path
 from typing import Optional, Dict, Any
 from rich.console import Console
 from rich.prompt import Prompt, Confirm
@@ -165,7 +164,7 @@ class APIConfig:
         else:
             masked_key = "未设置"
 
-        console.print(f"[bold]DeepSeek API 配置:[/bold]")
+        console.print("[bold]DeepSeek API 配置:[/bold]")
         console.print(f"  API Key: {masked_key}")
         console.print(f"  OpenAI 端点: {deepseek.get('base_url_openai', '未设置')}")
         console.print(f"  Anthropic 端点: {deepseek.get('base_url_anthropic', '未设置')}")
@@ -173,24 +172,24 @@ class APIConfig:
 
         # Claude Code 配置
         claude_code = self.get_claude_code_config()
-        console.print(f"\n[bold]Claude Code 接入配置:[/bold]")
+        console.print("\n[bold]Claude Code 接入配置:[/bold]")
         console.print(f"  Anthropic 端点: {claude_code.get('base_url', '未设置')}")
         console.print(f"  模型: {claude_code.get('model', '未设置')}")
 
         # Claude 安装配置
         claude = self.config.get("claude", {})
-        console.print(f"\n[bold]Claude Code 安装配置:[/bold]")
+        console.print("\n[bold]Claude Code 安装配置:[/bold]")
         console.print(f"  安装路径: {claude.get('install_path', '默认')}")
         console.print(f"  自动更新: {'是' if claude.get('auto_update', True) else '否'}")
 
         # npm 配置
         npm = self.config.get("npm", {})
-        console.print(f"\n[bold]npm 镜像配置:[/bold]")
+        console.print("\n[bold]npm 镜像配置:[/bold]")
         console.print(f"  镜像源: {npm.get('registry', 'https://registry.npmmirror.com')}")
 
         # 通用配置
         general = self.config.get("general", {})
-        console.print(f"\n[bold]通用配置:[/bold]")
+        console.print("\n[bold]通用配置:[/bold]")
         console.print(f"  日志级别: {general.get('log_level', 'INFO')}")
         console.print(f"  超时时间: {general.get('timeout', 30)}秒")
         console.print(f"  最大重试: {general.get('max_retries', 3)}次")
