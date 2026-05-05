@@ -108,22 +108,24 @@ def configure_claude_code():
     print()
 
     # 显示配置命令
+    masked_key = api_key[:8] + "..." + api_key[-4:] if len(api_key) > 12 else "***"
+    print_info(f"当前 API Key: {masked_key}")
     print_info("请在终端中运行以下命令配置 Claude Code:")
     print()
 
     if os.name == "nt":  # Windows
         console.print("[bold green]PowerShell:[/bold green]")
-        console.print(f'  $env:ANTHROPIC_API_KEY = "{api_key}"')
+        console.print('  $env:ANTHROPIC_API_KEY = "your-deepseek-api-key"')
         console.print(f'  $env:ANTHROPIC_BASE_URL = "{base_url}"')
         console.print(f'  claude --model {model}')
         print()
         console.print("[bold green]CMD:[/bold green]")
-        console.print(f'  set ANTHROPIC_API_KEY={api_key}')
+        console.print('  set ANTHROPIC_API_KEY=your-deepseek-api-key')
         console.print(f'  set ANTHROPIC_BASE_URL={base_url}')
         console.print(f'  claude --model {model}')
     else:  # Linux/macOS
         console.print("[bold green]Bash/Zsh:[/bold green]")
-        console.print(f'  export ANTHROPIC_API_KEY="{api_key}"')
+        console.print('  export ANTHROPIC_API_KEY="your-deepseek-api-key"')
         console.print(f'  export ANTHROPIC_BASE_URL="{base_url}"')
         console.print(f'  claude --model {model}')
 

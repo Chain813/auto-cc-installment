@@ -50,3 +50,9 @@ Thumbs.db
 .coverage
 htmlcov/
 .pytest_cache/
+
+# Generated launch scripts
+start_claude_deepseek.bat
+start_claude_deepseek.sh
+launch_claude.bat
+launch_claude.sh

@@ -463,9 +463,10 @@ class DeployGUI:
             self.log("\n" + "=" * 50)
             self.log("✓ 部署完成！")
             self.log("")
+            masked_key = api_key[:8] + "..." + api_key[-4:] if len(api_key) > 12 else "***"
             self.log("使用方法:")
-            self.log(f'  $env:ANTHROPIC_API_KEY = "{api_key}"')
-            self.log('  $env:ANTHROPIC_BASE_URL = "https://api.deepseek.com/anthropic"')
+            self.log(f"  当前 API Key: {masked_key}")
+            self.log("  请运行 python -m src.main setup-env 设置环境变量")
             self.log(f"  claude --model {model}")
             self.log("=" * 50)
 
