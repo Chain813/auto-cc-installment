@@ -24,8 +24,6 @@ python launcher.py
 
 只需输入 DeepSeek API Key，点击"开始部署"即可自动完成所有配置！
 
-![GUI 界面](docs/gui.png)
-
 ---
 
 ## 命令行方式
