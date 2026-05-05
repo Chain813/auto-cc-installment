@@ -1,5 +1,8 @@
 # Claude Code + DeepSeek API 自动化工具
 
+[![CI](https://github.com/Chain813/auto-cc-installment/actions/workflows/ci.yml/badge.svg)](https://github.com/Chain813/auto-cc-installment/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 自动化安装 Claude Code CLI 并配置 DeepSeek API 的跨平台工具。
 
 ## 功能特性

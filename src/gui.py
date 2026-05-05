@@ -485,10 +485,65 @@ class DeployGUI:
             self.root.after(0, self.progress.stop)
 
     def install_nodejs(self):
-        """安装 Node.js"""
-        self.log("请手动安装 Node.js 18+")
-        self.log("推荐下载地址: https://npmmirror.com/mirrors/node/")
-        raise Exception("需要手动安装 Node.js")
+        """自动安装 Node.js"""
+        self.log("正在自动安装 Node.js...")
+
+        if platform.system() == "Windows":
+            # Windows: 尝试使用 winget 或 choco
+            if shutil.which("winget"):
+                self.log("使用 winget 安装 Node.js...")
+                result = subprocess.run(
+                    ["winget", "install", "OpenJS.NodeJS.LTS", "--accept-package-agreements"],
+                    capture_output=True, text=True, timeout=300
+                )
+                if result.returncode == 0:
+                    self.log("[OK] Node.js 安装成功")
+                    return
+            elif shutil.which("choco"):
+                self.log("使用 Chocolatey 安装 Node.js...")
+                result = subprocess.run(
+                    ["choco", "install", "nodejs-lts", "-y"],
+                    capture_output=True, text=True, timeout=300
+                )
+                if result.returncode == 0:
+                    self.log("[OK] Node.js 安装成功")
+                    return
+
+            # 自动安装失败，提供下载链接
+            self.log("[WARN] 自动安装失败，请手动安装:")
+            self.log("  下载地址: https://npmmirror.com/mirrors/node/")
+            raise Exception("需要手动安装 Node.js")
+
+        elif platform.system() == "Darwin":  # macOS
+            if shutil.which("brew"):
+                self.log("使用 Homebrew 安装 Node.js...")
+                result = subprocess.run(
+                    ["brew", "install", "node@18"],
+                    capture_output=True, text=True, timeout=300
+                )
+                if result.returncode == 0:
+                    self.log("[OK] Node.js 安装成功")
+                    return
+            else:
+                self.log("[WARN] 请先安装 Homebrew: https://brew.sh")
+                raise Exception("需要手动安装 Node.js")
+
+        else:  # Linux
+            self.log("使用 apt 安装 Node.js...")
+            try:
+                subprocess.run(["sudo", "apt", "update"], capture_output=True, timeout=60)
+                result = subprocess.run(
+                    ["sudo", "apt", "install", "-y", "nodejs", "npm"],
+                    capture_output=True, text=True, timeout=300
+                )
+                if result.returncode == 0:
+                    self.log("[OK] Node.js 安装成功")
+                    return
+            except Exception:
+                pass
+
+            self.log("[WARN] 自动安装失败，请手动安装: https://nodejs.org")
+            raise Exception("需要手动安装 Node.js")
 
     def install_claude_code(self):
         """安装 Claude Code"""
