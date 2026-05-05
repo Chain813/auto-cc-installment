@@ -1,0 +1,41 @@
+# Claude Code + DeepSeek API 配置文件
+# 复制此文件为 config.yaml 并填入你的配置
+
+# DeepSeek API 配置（国内直连，无需 VPN）
+deepseek:
+  api_key: "your-deepseek-api-key-here"
+
+  # OpenAI 兼容端点（用于本工具的聊天功能）
+  base_url_openai: "https://api.deepseek.com/v1"
+
+  # Anthropic 兼容端点（用于 Claude Code 直接接入）
+  base_url_anthropic: "https://api.deepseek.com/anthropic"
+
+  # 默认模型
+  model: "deepseek-v4-flash"
+
+  # 可用模型列表
+  # deepseek-v4-flash: 快速模型（推荐日常使用）
+  # deepseek-v4-pro: 专业模型（复杂任务）
+
+# Claude Code 配置（直接使用 DeepSeek 作为后端）
+claude_code:
+  # Anthropic 兼容端点
+  base_url: "https://api.deepseek.com/anthropic"
+  # 模型名称
+  model: "deepseek-v4-flash"
+
+# Claude Code 安装配置
+claude:
+  install_path: ""
+  auto_update: true
+
+# npm 镜像配置（安装 Claude Code 使用）
+npm:
+  registry: "https://registry.npmmirror.com"
+
+# 通用设置
+general:
+  log_level: "INFO"
+  timeout: 30
+  max_retries: 3
