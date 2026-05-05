@@ -43,7 +43,7 @@ class ClaudeCodeInstaller:
     def get_node_version(self) -> str:
         """获取 Node.js 版本"""
         try:
-            result = run_command("node --version", check=False)
+            result = run_command(["node", "--version"], check=False)
             return result.stdout.strip()
         except Exception:
             return "未安装"
@@ -51,7 +51,7 @@ class ClaudeCodeInstaller:
     def get_npm_version(self) -> str:
         """获取 npm 版本"""
         try:
-            result = run_command("npm --version", check=False)
+            result = run_command(["npm", "--version"], check=False)
             return result.stdout.strip()
         except Exception:
             return "未安装"
@@ -76,7 +76,7 @@ class ClaudeCodeInstaller:
             if check_command_exists("brew"):
                 print_info("使用 Homebrew 安装 Node.js...")
                 try:
-                    run_command("brew install node@18")
+                    run_command(["brew", "install", "node@18"])
                     print_success("Node.js 安装成功")
                     return True
                 except Exception as e:
@@ -91,13 +91,14 @@ class ClaudeCodeInstaller:
             print_info("使用包管理器安装 Node.js...")
             try:
                 # 尝试使用 apt (Debian/Ubuntu)
-                run_command("sudo apt update && sudo apt install -y nodejs npm")
+                run_command(["sudo", "apt", "update"])
+                run_command(["sudo", "apt", "install", "-y", "nodejs", "npm"])
                 print_success("Node.js 安装成功")
                 return True
             except Exception:
                 try:
                     # 尝试使用 yum (CentOS/RHEL)
-                    run_command("sudo yum install -y nodejs npm")
+                    run_command(["sudo", "yum", "install", "-y", "nodejs", "npm"])
                     print_success("Node.js 安装成功")
                     return True
                 except Exception as e:
@@ -147,10 +148,12 @@ class ClaudeCodeInstaller:
             self.npm_mirror = self.select_npm_mirror()
 
         try:
-            # 使用指定镜像源安装
-            install_cmd = f"npm install -g @anthropic-ai/claude-code --registry={self.npm_mirror}"
+            # 使用指定镜像源安装（使用列表避免 shell=True）
             print_info(f"使用镜像源: {self.npm_mirror}")
-            run_command(install_cmd)
+            run_command([
+                "npm", "install", "-g", "@anthropic-ai/claude-code",
+                f"--registry={self.npm_mirror}"
+            ])
             print_success("Claude Code 安装成功")
             return True
         except Exception as e:
@@ -158,7 +161,6 @@ class ClaudeCodeInstaller:
             print_warning("如果安装失败，请尝试:")
             print_info("1. 选择其他镜像源")
             print_info("2. 检查网络连接")
-            print_info("3. 使用 VPN 连接")
             return False
 
     def verify_installation(self) -> bool:
@@ -167,7 +169,7 @@ class ClaudeCodeInstaller:
             return False
 
         try:
-            result = run_command("claude --version", check=False)
+            result = run_command(["claude", "--version"], check=False)
             if result.returncode == 0:
                 print_success(f"Claude Code 版本: {result.stdout.strip()}")
                 return True

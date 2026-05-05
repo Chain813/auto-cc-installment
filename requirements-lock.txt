@@ -1,0 +1,9 @@
+# 锁定版本的依赖文件（用于生产环境）
+# 生成日期: 2026-05-05
+# 使用方法: pip install -r requirements-lock.txt
+
+pyyaml==6.0.1
+requests==2.31.0
+rich==13.7.0
+click==8.1.7
+openai==1.12.0

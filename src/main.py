@@ -134,26 +134,36 @@ def configure_claude_code():
 
     # 询问是否创建启动脚本
     if Confirm.ask("\n是否创建启动脚本?", default=True):
-        # 创建启动脚本（根据平台选择格式）
+        # 创建启动脚本（使用环境变量，不硬编码 API Key）
         if os.name == "nt":
             script_content = f'''@echo off
 REM Claude Code with DeepSeek API 启动脚本
+REM 注意: 请先运行 setup-env 命令设置环境变量，或手动设置
 
-set ANTHROPIC_API_KEY={api_key}
-set ANTHROPIC_BASE_URL={base_url}
-
-echo 正在启动 Claude Code (DeepSeek API)...
+echo Claude Code + DeepSeek API
+echo.
+echo 请确保已运行: python -m src.main setup-env
+echo 或手动设置以下环境变量:
+echo   ANTHROPIC_API_KEY
+echo   ANTHROPIC_BASE_URL={base_url}
+echo.
+echo 正在启动 Claude Code (模型: {model})...
 claude --model {model}
 '''
             script_path = "start_claude_deepseek.bat"
         else:
             script_content = f'''#!/bin/bash
 # Claude Code with DeepSeek API 启动脚本
+# 注意: 请先运行 setup-env 命令设置环境变量，或手动设置
 
-export ANTHROPIC_API_KEY="{api_key}"
-export ANTHROPIC_BASE_URL="{base_url}"
-
-echo "正在启动 Claude Code (DeepSeek API)..."
+echo "Claude Code + DeepSeek API"
+echo ""
+echo "请确保已运行: python -m src.main setup-env"
+echo "或手动设置以下环境变量:"
+echo "  ANTHROPIC_API_KEY"
+echo "  ANTHROPIC_BASE_URL={base_url}"
+echo ""
+echo "正在启动 Claude Code (模型: {model})..."
 claude --model {model}
 '''
             script_path = "start_claude_deepseek.sh"
@@ -161,6 +171,7 @@ claude --model {model}
         with open(script_path, "w") as f:
             f.write(script_content)
         print_success(f"启动脚本已创建: {script_path}")
+        print_warning("注意: 脚本不再包含 API Key，请先运行 setup-env 设置环境变量")
 
 
 @cli.command()

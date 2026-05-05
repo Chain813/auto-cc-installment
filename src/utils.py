@@ -5,6 +5,7 @@ import subprocess
 import shutil
 import sys
 from pathlib import Path
+from typing import List
 from rich.console import Console
 
 # 修复 Windows 终端编码
@@ -34,21 +35,37 @@ def check_command_exists(command: str) -> bool:
     return shutil.which(command) is not None
 
 
-def run_command(command: str, check: bool = True, capture_output: bool = True) -> subprocess.CompletedProcess:
-    """运行系统命令"""
+def run_command(command: List[str], check: bool = True, capture_output: bool = True) -> subprocess.CompletedProcess:
+    """
+    安全地运行系统命令
+
+    Args:
+        command: 命令列表（避免 shell=True 的安全风险）
+        check: 是否检查返回码
+        capture_output: 是否捕获输出
+    """
     try:
         result = subprocess.run(
             command,
-            shell=True,
             check=check,
             capture_output=capture_output,
             text=True
         )
         return result
     except subprocess.CalledProcessError as e:
-        console.print(f"[red]命令执行失败: {command}[/red]")
+        console.print(f"[red]命令执行失败: {' '.join(command)}[/red]")
         console.print(f"[red]错误信息: {e.stderr}[/red]")
         raise
+
+
+def run_command_safe(command: str, check: bool = True, capture_output: bool = True) -> subprocess.CompletedProcess:
+    """
+    运行命令（兼容旧调用方式，但内部使用列表）
+
+    注意：此函数会将命令按空格分割，不适用于包含空格参数的命令
+    """
+    cmd_list = command.split()
+    return run_command(cmd_list, check, capture_output)
 
 
 def get_project_root() -> Path:
@@ -66,6 +83,13 @@ def get_config_dir() -> Path:
 def get_config_path() -> Path:
     """获取配置文件路径"""
     return get_config_dir() / "config.yaml"
+
+
+def mask_sensitive(value: str, show_chars: int = 4) -> str:
+    """遮蔽敏感信息"""
+    if not value or len(value) <= show_chars * 2:
+        return "***"
+    return f"{value[:show_chars]}...{value[-show_chars:]}"
 
 
 def print_success(message: str):

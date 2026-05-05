@@ -588,14 +588,16 @@ class DeployGUI:
 
         # 处理模型选择
         if model_choice == "自动 (智能选择)":
-            # 自动模式：默认使用 flash，启动脚本会提示用户
             model = "deepseek-v4-flash"
             auto_mode = True
         else:
             model = model_choice
             auto_mode = False
 
-        # 创建启动脚本
+        # 保存配置到文件（而不是硬编码到脚本）
+        self.save_config(api_key, model)
+
+        # 创建启动脚本（从配置文件读取，不硬编码 API Key）
         if platform.system() == "Windows":
             if auto_mode:
                 script = f'''@echo off
@@ -605,19 +607,19 @@ echo 智能模型选择说明:
 echo   - 简单任务会自动使用 deepseek-v4-flash (快速)
 echo   - 复杂任务会自动使用 deepseek-v4-pro (专业)
 echo.
-set ANTHROPIC_API_KEY={api_key}
-set ANTHROPIC_BASE_URL={base_url}
-echo 启动 Claude Code...
-claude --model {model}
+echo 请确保已运行: python -m src.main setup-env
+echo 或手动设置环境变量 ANTHROPIC_API_KEY 和 ANTHROPIC_BASE_URL
+echo.
+pause
 '''
             else:
                 script = f'''@echo off
 echo Claude Code + DeepSeek API
 echo.
-set ANTHROPIC_API_KEY={api_key}
-set ANTHROPIC_BASE_URL={base_url}
-echo 启动 Claude Code (模型: {model})...
-claude --model {model}
+echo 请确保已运行: python -m src.main setup-env
+echo 或手动设置环境变量 ANTHROPIC_API_KEY 和 ANTHROPIC_BASE_URL
+echo.
+pause
 '''
             script_path = "launch_claude.bat"
         else:
@@ -629,33 +631,36 @@ echo "智能模型选择说明:"
 echo "  - 简单任务会自动使用 deepseek-v4-flash (快速)"
 echo "  - 复杂任务会自动使用 deepseek-v4-pro (专业)"
 echo ""
-export ANTHROPIC_API_KEY="{api_key}"
-export ANTHROPIC_BASE_URL="{base_url}"
-echo "启动 Claude Code..."
-claude --model {model}
+echo "请确保已运行: python -m src.main setup-env"
+echo "或手动设置环境变量 ANTHROPIC_API_KEY 和 ANTHROPIC_BASE_URL"
+echo ""
 '''
             else:
                 script = f'''#!/bin/bash
 echo "Claude Code + DeepSeek API"
 echo ""
-export ANTHROPIC_API_KEY="{api_key}"
-export ANTHROPIC_BASE_URL="{base_url}"
-echo "启动 Claude Code (模型: {model})..."
-claude --model {model}
+echo "请确保已运行: python -m src.main setup-env"
+echo "或手动设置环境变量 ANTHROPIC_API_KEY 和 ANTHROPIC_BASE_URL"
+echo ""
 '''
             script_path = "launch_claude.sh"
 
         with open(script_path, "w") as f:
             f.write(script)
 
+        # 设置当前会话的环境变量
+        import os
+        os.environ["ANTHROPIC_API_KEY"] = api_key
+        os.environ["ANTHROPIC_BASE_URL"] = base_url
+
         self.log(f"✓ 启动脚本已创建: {script_path}")
+        self.log("✓ 环境变量已设置（当前会话）")
         if auto_mode:
             self.log("  模式: 智能选择 (flash/pro)")
         else:
             self.log(f"  模型: {model}")
-        self.log("请在新终端中运行启动脚本")
 
-        messagebox.showinfo("提示", f"启动脚本已创建: {script_path}\n请在新终端中运行")
+        messagebox.showinfo("提示", f"启动脚本已创建: {script_path}\n环境变量已设置，可以直接运行 claude --model {model}")
 
 
 def main():
