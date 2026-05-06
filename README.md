@@ -62,35 +62,42 @@ DeepSeek 提供 **Anthropic 兼容端点**，Claude Code 可以直接对接，�
 
 ## 快速开始
 
-### 方式一：GUI 一键部署（推荐）
+> 前提：已安装 [Python 3.8+](https://www.python.org/downloads/)（安装时勾选 "Add Python to PATH"）
 
-```bash
-# 安装 Python 依赖
-pip install -r requirements.txt
+### Windows
 
-# 启动 GUI 部署工具
-python launcher.py
+双击运行 `install.bat`，按提示输入 API Key 即可。脚本会自动完成：
+
+1. 安装 Python 依赖
+2. 安装 Node.js（如未安装）
+3. 安装 Claude Code（使用国内镜像）
+4. 配置 DeepSeek API 并测试连接
+
+```powershell
+# 或在终端中运行
+.\install.bat
 ```
 
-输入 DeepSeek API Key，点击"开始部署"，自动完成所有配置。
-
-### 方式二：命令行快速安装
+### macOS / Linux
 
 ```bash
-# 安装依赖
-pip install -r requirements.txt
+chmod +x install.sh
+./install.sh
+```
 
-# 配置 API Key
-python -m src.main configure
+### GUI 方式
 
-# 一键设置环境变量并启动
-python -m src.main setup-env
-claude
+安装完成后也可使用图形界面：
+
+```bash
+python launcher.py
 ```
 
 ---
 
 ## 详细安装
+
+如需分步手动操作，参考以下流程。
 
 ### 1. 安装 Python 依赖
 
@@ -102,26 +109,12 @@ pip install -r requirements.txt
 
 ### 2. 安装 Claude Code
 
-**使用安装脚本：**
-
-```bash
-# Linux / macOS
-chmod +x scripts/install.sh
-./scripts/install.sh
-
-# Windows (PowerShell)
-.\scripts\install.ps1
-```
-
-**或手动安装：**
-
 ```bash
 # 使用国内镜像（推荐，无需 VPN）
 npm install -g @anthropic-ai/claude-code --registry=https://registry.npmmirror.com
-
-# 或使用官方源（需要 VPN）
-npm install -g @anthropic-ai/claude-code
 ```
+
+也可使用 `scripts/install.sh` 或 `scripts/install.ps1` 脚本安装。
 
 ### 3. 配置 DeepSeek API
 
@@ -149,9 +142,6 @@ claude
 export ANTHROPIC_API_KEY="your-deepseek-api-key"
 export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
 claude
-
-# 方式 C：使用工具自动生成启动脚本
-python -m src.main configure-claude-code
 ```
 
 ---
@@ -162,7 +152,8 @@ python -m src.main configure-claude-code
 
 | 启动命令 | 说明 |
 |----------|------|
-| `python launcher.py` | 启动 GUI 一键部署工具 |
+| `install.bat` / `./install.sh` | 全自动安装（推荐，双击运行） |
+| `python launcher.py` | 启动 GUI 部署工具 |
 | `python src/gui.py` | 启动 GUI（备选入口） |
 
 ### CLI 命令
@@ -195,6 +186,9 @@ python -m unittest discover tests/ -v
 
 ```
 auto-cc-installment/
+├── install.bat                 # Windows 一键安装脚本（双击运行）
+├── install.sh                  # macOS/Linux 一键安装脚本
+├── launcher.py                 # GUI 启动入口
 ├── src/                        # 核心源码
 │   ├── __init__.py
 │   ├── main.py                 # CLI 入口 (Click 命令组)
@@ -204,15 +198,14 @@ auto-cc-installment/
 │   ├── model_selector.py       # 智能模型选择器
 │   ├── gui.py                  # GUI 界面 (tkinter)
 │   └── utils.py                # 工具函数
-├── scripts/                    # 安装脚本
-│   ├── install.sh              # Linux/macOS 安装脚本
-│   └── install.ps1             # Windows 安装脚本
+├── scripts/                    # 辅助安装脚本
+│   ├── install.sh              # Linux/macOS npm 安装脚本
+│   └── install.ps1             # Windows npm 安装脚本
 ├── tests/                      # 测试
 │   ├── test_installation.py    # 安装模块测试
 │   └── test_network.py         # 网络连接测试
 ├── config/                     # 配置目录 (运行时生成)
 │   └── config.yaml             # 用户配置文件
-├── launcher.py                 # GUI 启动入口
 ├── requirements.txt            # Python 依赖
 ├── requirements-lock.txt       # 依赖锁定版本
 ├── .github/workflows/          # GitHub Actions CI
