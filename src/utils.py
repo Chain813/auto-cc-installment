@@ -8,8 +8,8 @@ from pathlib import Path
 from typing import List
 from rich.console import Console
 
-# 修复 Windows 终端编码
-if sys.platform == "win32":
+# 修复 Windows 终端编码（跳过 pytest，避免破坏其 capture 机制）
+if sys.platform == "win32" and "_pytest" not in sys.modules:
     import io
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
