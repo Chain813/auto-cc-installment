@@ -1,139 +1,236 @@
-# Claude Code + DeepSeek API 自动化工具
+# Claude Code + DeepSeek API 自动化部署工具
 
 [![CI](https://github.com/Chain813/auto-cc-installment/actions/workflows/ci.yml/badge.svg)](https://github.com/Chain813/auto-cc-installment/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
 
-自动化安装 Claude Code CLI 并配置 DeepSeek API 的跨平台工具。
-
-## 功能特性
-
-- 🚀 **自动安装 Claude Code** - 检测并自动安装 Node.js 和 Claude Code
-- 🔑 **DeepSeek API 集成** - 直接在 Claude Code 中使用 DeepSeek API
-- 💬 **交互式聊天** - 使用 DeepSeek API 进行对话
-- 🖥️ **跨平台支持** - 支持 Windows、macOS 和 Linux
-- ⚙️ **简单配置** - 命令行配置向导
-- 🌐 **无需 VPN** - 使用国内镜像，直连 DeepSeek API
-- 🔄 **API 兼容** - DeepSeek 提供 Anthropic 兼容端点
-- 🎨 **GUI 界面** - 一键部署，只需输入 API Key
-- ⚡ **一键设置环境变量** - 快速配置当前终端会话
-- 🧠 **智能模型选择** - 根据任务复杂度自动选择 flash/pro 模型
-
-## 快速开始（GUI 一键部署）
-
-```bash
-# 启动 GUI 一键部署工具
-python launcher.py
-```
-
-只需输入 DeepSeek API Key，点击"开始部署"即可自动完成所有配置！
+> 一键部署 Claude Code CLI，通过 DeepSeek API 的 Anthropic 兼容端点实现国内直连使用，无需 VPN。
 
 ---
 
-## 命令行方式
+## 目录
 
-### 1. 一键安装
+- [功能特性](#功能特性)
+- [工作原理](#工作原理)
+- [快速开始](#快速开始)
+- [详细安装](#详细安装)
+- [使用指南](#使用指南)
+- [项目结构](#项目结构)
+- [配置说明](#配置说明)
+- [智能模型选择](#智能模型选择)
+- [前置要求](#前置要求)
+- [常见问题](#常见问题)
+- [相关文档](#相关文档)
+- [许可证](#许可证)
 
-**Linux/macOS:**
+---
+
+## 功能特性
+
+| 特性 | 说明 |
+|------|------|
+| **GUI 一键部署** | 图形界面操作，输入 API Key 即可自动完成全部配置 |
+| **自动安装 Claude Code** | 检测并自动安装 Node.js、npm 和 Claude Code CLI |
+| **DeepSeek API 集成** | 利用 Anthropic 兼容端点，在 Claude Code 中直接使用 DeepSeek |
+| **交互式聊天** | 支持流式输出的命令行对话，含智能模型选择 |
+| **跨平台支持** | 完整支持 Windows、macOS 和 Linux |
+| **国内镜像加速** | 使用淘宝/阿里云/腾讯云/华为云 npm 镜像，无需 VPN |
+| **智能模型切换** | 根据任务复杂度自动选择 flash/pro 模型 |
+| **安全存储** | API Key 通过环境变量和本地配置管理，不硬编码 |
+
+---
+
+## 工作原理
+
+DeepSeek 提供 **Anthropic 兼容端点**，Claude Code 可以直接对接，无需代理或中间层：
+
+```
+┌─────────────────┐       Anthropic 格式请求        ┌─────────────────┐
+│   Claude Code   │ ──────────────────────────────→ │   DeepSeek API  │
+│   CLI 工具       │                                 │   /anthropic    │
+│                 │ ←──────────────────────────────  │                 │
+└─────────────────┘       响应 (Claude 兼容)         └─────────────────┘
+```
+
+| API 类型 | 端点 | 用途 |
+|----------|------|------|
+| OpenAI 兼容 | `https://api.deepseek.com/v1` | 本工具内置聊天功能 |
+| Anthropic 兼容 | `https://api.deepseek.com/anthropic` | Claude Code 直接接入 |
+
+---
+
+## 快速开始
+
+### 方式一：GUI 一键部署（推荐）
+
 ```bash
-chmod +x scripts/install.sh
-./scripts/install.sh
+# 安装 Python 依赖
+pip install -r requirements.txt
+
+# 启动 GUI 部署工具
+python launcher.py
 ```
 
-**Windows (PowerShell):**
-```powershell
-.\scripts\install.ps1
-```
+输入 DeepSeek API Key，点击"开始部署"，自动完成所有配置。
 
-### 2. 手动安装
+### 方式二：命令行快速安装
 
 ```bash
 # 安装依赖
 pip install -r requirements.txt
 
-# 安装 Claude Code（使用国内镜像，无需 VPN）
+# 配置 API Key
+python -m src.main configure
+
+# 一键设置环境变量并启动
+python -m src.main setup-env
+claude
+```
+
+---
+
+## 详细安装
+
+### 1. 安装 Python 依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+核心依赖：`pyyaml`、`requests`、`rich`、`click`、`openai`
+
+### 2. 安装 Claude Code
+
+**使用安装脚本：**
+
+```bash
+# Linux / macOS
+chmod +x scripts/install.sh
+./scripts/install.sh
+
+# Windows (PowerShell)
+.\scripts\install.ps1
+```
+
+**或手动安装：**
+
+```bash
+# 使用国内镜像（推荐，无需 VPN）
 npm install -g @anthropic-ai/claude-code --registry=https://registry.npmmirror.com
+
+# 或使用官方源（需要 VPN）
+npm install -g @anthropic-ai/claude-code
 ```
 
 ### 3. 配置 DeepSeek API
 
 ```bash
+# 交互式配置向导
 python -m src.main configure
 ```
 
-按提示输入你的 DeepSeek API Key。可以在 [DeepSeek Platform](https://platform.deepseek.com) 获取。
+按提示输入 API Key（在 [platform.deepseek.com](https://platform.deepseek.com) 申请）。
 
-### 4. 在 Claude Code 中使用 DeepSeek
+### 4. 启动 Claude Code
 
 ```bash
-# 方式 1: 环境变量配置（推荐）
+# 方式 A：一键设置当前终端环境变量
+python -m src.main setup-env
+claude
+
+# 方式 B：手动设置环境变量
 # Windows PowerShell:
 $env:ANTHROPIC_API_KEY = "your-deepseek-api-key"
 $env:ANTHROPIC_BASE_URL = "https://api.deepseek.com/anthropic"
 claude
 
-# Linux/macOS:
+# Linux / macOS:
 export ANTHROPIC_API_KEY="your-deepseek-api-key"
 export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
 claude
 
-# 方式 2: 使用本工具自动生成配置
+# 方式 C：使用工具自动生成启动脚本
 python -m src.main configure-claude-code
 ```
 
-## 命令列表
+---
+
+## 使用指南
 
 ### GUI 方式
 
-| 启动方式 | 说明 |
+| 启动命令 | 说明 |
 |----------|------|
 | `python launcher.py` | 启动 GUI 一键部署工具 |
-| `python src/gui.py` | 启动 GUI（备选） |
+| `python src/gui.py` | 启动 GUI（备选入口） |
 
-### CLI 方式
+### CLI 命令
 
-| 命令 | 说明 |
-|------|------|
-| `install` | 安装 Claude Code |
-| `configure` | 配置 DeepSeek API |
-| `setup-env` | 一键设置环境变量（当前终端） |
-| `configure-claude-code` | 配置 Claude Code 使用 DeepSeek |
-| `show` | 显示当前配置 |
-| `test` | 测试 API 连接 |
-| `chat` | 启动交互式聊天 |
-| `chat --auto-model` | 启动智能模型选择聊天 |
-| `status` | 显示系统状态 |
+| 命令 | 说明 | 示例 |
+|------|------|------|
+| `install` | 安装 Claude Code | `python -m src.main install` |
+| `configure` | 配置 DeepSeek API | `python -m src.main configure` |
+| `setup-env` | 一键设置当前终端环境变量 | `python -m src.main setup-env` |
+| `configure-claude-code` | 生成 Claude Code 配置/启动脚本 | `python -m src.main configure-claude-code` |
+| `show` | 显示当前配置 | `python -m src.main show` |
+| `test` | 测试 API 连接 | `python -m src.main test` |
+| `chat` | 启动交互式聊天 | `python -m src.main chat` |
+| `chat --auto-model` | 启动智能模型选择聊天 | `python -m src.main chat --auto-model` |
+| `status` | 显示系统状态 | `python -m src.main status` |
 
-## DeepSeek API 接入原理
+### 运行测试
 
-DeepSeek 提供 **Anthropic 兼容端点**，无需代理即可直接在 Claude Code 中使用：
+```bash
+# 使用 pytest
+python -m pytest tests/ -v
 
-```
-┌─────────────────┐                    ┌─────────────────┐
-│   Claude Code   │ ──────────────────→│   DeepSeek API  │
-│                 │   Anthropic 格式   │                 │
-│   /v1/messages  │                    │   /anthropic    │
-└─────────────────┘                    └─────────────────┘
+# 使用 unittest
+python -m unittest discover tests/ -v
 ```
 
-### API 端点
+---
 
-| API 类型 | 端点 | 用途 |
-|----------|------|------|
-| OpenAI 兼容 | `https://api.deepseek.com/v1` | 本工具聊天功能 |
-| Anthropic 兼容 | `https://api.deepseek.com/anthropic` | Claude Code 直接接入 |
+## 项目结构
 
-### 可用模型
+```
+auto-cc-installment/
+├── src/                        # 核心源码
+│   ├── __init__.py
+│   ├── main.py                 # CLI 入口 (Click 命令组)
+│   ├── installer.py            # Claude Code 安装器
+│   ├── api_config.py           # API 配置管理 (YAML)
+│   ├── deepseek_client.py      # DeepSeek API 客户端 (OpenAI SDK)
+│   ├── model_selector.py       # 智能模型选择器
+│   ├── gui.py                  # GUI 界面 (tkinter)
+│   └── utils.py                # 工具函数
+├── scripts/                    # 安装脚本
+│   ├── install.sh              # Linux/macOS 安装脚本
+│   └── install.ps1             # Windows 安装脚本
+├── tests/                      # 测试
+│   ├── test_installation.py    # 安装模块测试
+│   └── test_network.py         # 网络连接测试
+├── config/                     # 配置目录 (运行时生成)
+│   └── config.yaml             # 用户配置文件
+├── launcher.py                 # GUI 启动入口
+├── requirements.txt            # Python 依赖
+├── requirements-lock.txt       # 依赖锁定版本
+├── .github/workflows/          # GitHub Actions CI
+│   ├── ci.yml                  # 多平台测试 + lint
+│   └── release.yml             # 发布流程
+├── CLAUDE_CODE_CONFIG.md       # Claude Code 配置指南
+├── NETWORK.md                  # 网络说明
+├── SECURITY.md                 # 安全说明
+└── TEST_REPORT.md              # 测试报告
+```
 
-| 模型 | 说明 | 推荐场景 |
-|------|------|----------|
-| `deepseek-v4-flash` | 快速模型 | 日常编程、快速问答 |
-| `deepseek-v4-pro` | 专业模型 | 复杂任务、代码生成 |
+---
 
-> ⚠️ `deepseek-chat` 和 `deepseek-reasoner` 将于 2026/07/24 弃用
+## 配置说明
 
-## 配置文件
+### 配置文件
 
-配置文件位于 `config/config.yaml`，首次运行时会自动创建。
+配置文件位于 `config/config.yaml`，首次运行时自动创建：
 
 ```yaml
 deepseek:
@@ -148,84 +245,151 @@ claude_code:
 
 npm:
   registry: "https://registry.npmmirror.com"
+
+general:
+  log_level: "INFO"
+  timeout: 30
+  max_retries: 3
 ```
 
-## 环境变量
+### 环境变量
 
-可以通过环境变量覆盖配置：
+可通过环境变量覆盖配置（优先级高于配置文件）：
 
-- `DEEPSEEK_API_KEY` - DeepSeek API 密钥
-- `ANTHROPIC_API_KEY` - Claude Code 使用的 API Key
-- `ANTHROPIC_BASE_URL` - Claude Code 使用的 API 端点
+| 变量名 | 说明 |
+|--------|------|
+| `DEEPSEEK_API_KEY` | DeepSeek API 密钥 |
+| `ANTHROPIC_API_KEY` | Claude Code 使用的 API Key |
+| `ANTHROPIC_BASE_URL` | Claude Code 使用的 API 端点 |
+
+### npm 镜像源
+
+| 镜像源 | 地址 | 备注 |
+|--------|------|------|
+| 淘宝镜像 | `https://registry.npmmirror.com` | 默认，推荐 |
+| 阿里云镜像 | `https://npm.aliyun.com` | 备用 |
+| 腾讯云镜像 | `https://mirrors.cloud.tencent.com/npm` | 备用 |
+| 华为云镜像 | `https://repo.huaweicloud.com/repository/npm/` | 备用 |
+| 官方源 | `https://registry.npmjs.org` | 需要 VPN |
+
+---
+
+## 智能模型选择
+
+项目支持根据任务复杂度自动选择 DeepSeek 模型：
+
+| 模型 | 速度 | 适用场景 |
+|------|------|----------|
+| `deepseek-v4-flash` | 快 | 日常编程、快速问答、格式转换、简单操作 |
+| `deepseek-v4-pro` | 慢 | 复杂架构、代码重构、系统设计、调试排查 |
+
+### 选择逻辑
+
+- **Flash 模型触发**：短消息（< 10 词）、简单关键词（hello、help、run）、基本操作
+- **Pro 模型触发**：长消息（> 20 词）、复杂关键词（architecture、refactor）、包含代码块、多行输入
+
+### 使用方式
+
+```bash
+# 命令行
+python -m src.main chat --auto-model
+
+# GUI 中选择"自动 (智能选择)"
+python launcher.py
+```
+
+---
+
+## 可用模型
+
+| 模型 | 说明 | 推荐场景 |
+|------|------|----------|
+| `deepseek-v4-flash` | 快速模型 | 日常编程、快速问答（推荐） |
+| `deepseek-v4-pro` | 专业模型 | 复杂任务、代码生成 |
+
+> **注意**: `deepseek-chat` 和 `deepseek-reasoner` 将于 2026/07/24 弃用，请使用上述模型。
+
+---
+
+## 前置要求
+
+| 依赖 | 版本 | 说明 |
+|------|------|------|
+| Python | 3.8+ | 运行本工具 |
+| Node.js | 18+ | 安装 Claude Code 需要 |
+| npm | 随 Node.js | 安装 Claude Code 需要 |
+| DeepSeek API Key | - | 在 [platform.deepseek.com](https://platform.deepseek.com) 申请 |
+
+---
+
+## 常见问题
+
+### 如何获取 DeepSeek API Key？
+
+访问 [platform.deepseek.com](https://platform.deepseek.com) 注册账号，在 API Keys 页面创建密钥。
+
+### Claude Code 如何使用 DeepSeek API？
+
+DeepSeek 提供 Anthropic 兼容端点，只需设置两个环境变量：
+
+```bash
+export ANTHROPIC_API_KEY="your-deepseek-api-key"
+export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
+```
+
+或使用本工具一键配置：`python -m src.main setup-env`
+
+### 需要使用 VPN 吗？
+
+**不需要。** DeepSeek API 服务器位于中国，国内可直连。npm 安装使用国内镜像，同样无需 VPN。
+
+### 环境变量设置后不生效？
+
+环境变量仅在当前终端会话有效。如需永久生效：
+
+- **Linux/macOS**: 将 `export` 命令添加到 `~/.bashrc` 或 `~/.zshrc`
+- **Windows**: 通过"系统属性 → 环境变量"设置，或使用 `python -m src.main configure-claude-code` 生成启动脚本
+
+### API 连接失败怎么办？
+
+```bash
+# 1. 测试网络连通性
+curl -I https://api.deepseek.com
+
+# 2. 检查 API Key 是否有效
+python -m src.main test
+
+# 3. 查看当前配置
+python -m src.main show
+```
+
+常见原因：API Key 无效、余额不足、网络受限。详见 [NETWORK.md](NETWORK.md)。
+
+---
 
 ## 网络说明
 
 **本项目无需使用 VPN 或任何代理工具。**
 
 - DeepSeek API 位于中国，国内用户可直接访问
-- npm 安装使用国内镜像（淘宝镜像）
-- 所有网络请求均使用直连方式
+- npm 安装使用国内镜像（淘宝镜像等）
+- 所有网络请求均使用 HTTPS 直连
 
-## 智能模型选择
+详细网络配置和故障排除请参考 [NETWORK.md](NETWORK.md)。
 
-项目支持根据任务复杂度自动选择模型：
+---
 
-| 模型 | 适用场景 | 速度 |
-|------|----------|------|
-| `deepseek-v4-flash` | 简单问答、快速操作、格式转换 | 快 |
-| `deepseek-v4-pro` | 复杂架构、代码重构、系统设计 | 慢 |
+## 相关文档
 
-### 使用方法
+| 文档 | 说明 |
+|------|------|
+| [CLAUDE_CODE_CONFIG.md](CLAUDE_CODE_CONFIG.md) | Claude Code 配置指南 |
+| [NETWORK.md](NETWORK.md) | 网络配置和故障排除 |
+| [SECURITY.md](SECURITY.md) | 安全措施说明 |
+| [TEST_REPORT.md](TEST_REPORT.md) | 测试结果报告 |
 
-```bash
-# 启用智能模型选择的聊天
-python -m src.main chat --auto-model
-
-# 或在 GUI 中选择"自动 (智能选择)"
-python launcher.py
-```
-
-### 选择逻辑
-
-- **Flash 模型**: 短消息、简单关键词、基本操作
-- **Pro 模型**: 长消息、复杂关键词、代码块、多行输入
-
-## 前置要求
-
-- Python 3.8+
-- Node.js 18+ (安装 Claude Code 需要)
-- npm (随 Node.js 安装)
-- DeepSeek API Key (在 [platform.deepseek.com](https://platform.deepseek.com) 申请)
-
-## 常见问题
-
-### 如何获取 DeepSeek API Key？
-
-访问 https://platform.deepseek.com 注册并获取 API Key。
-
-### Claude Code 如何使用 DeepSeek API？
-
-DeepSeek 提供 Anthropic 兼容端点，只需设置环境变量：
-```bash
-export ANTHROPIC_API_KEY="your-key"
-export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
-```
-
-### 需要使用 VPN 吗？
-
-**不需要。** DeepSeek API 位于中国，国内可直接访问。
-
-### 支持哪些模型？
-
-- `deepseek-v4-flash` - 快速模型（推荐）
-- `deepseek-v4-pro` - 专业模型
-
-## 详细文档
-
-- [网络说明](NETWORK.md) - 网络配置和故障排除
-- [Claude Code 配置指南](CLAUDE_CODE_CONFIG.md) - 详细配置说明
-- [测试报告](TEST_REPORT.md) - 测试结果
+---
 
 ## 许可证
 
-MIT License
+MIT License - 详见 [LICENSE](LICENSE)
