@@ -58,12 +58,15 @@ claude
 }
 ```
 
-### 方法 3：使用本工具自动配置
+### 方法 3：使用本项目的 GUI 工具（最简单，推荐）
 
-```bash
-# 运行配置向导
-python -m src.main configure-claude-code
-```
+本项目提供了一个无代码界面的启动方式，它**不污染系统的全局环境变量**。
+
+1. 双击运行项目根目录下的 **`启动工具.vbs`**（或执行 `python launcher.py`）
+2. 在界面中输入您的 DeepSeek API Key。
+3. 点击右下角的 **“⚡ 启动 Claude Code”**。
+
+GUI 会在后台生成一个带有正确环境变量（`ANTHROPIC_API_KEY` 和 `ANTHROPIC_BASE_URL`）的独立终端，并直接进入 `claude` 命令行交互界面。
 
 ## 可用模型
 

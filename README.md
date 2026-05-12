@@ -64,19 +64,18 @@ DeepSeek 提供 **Anthropic 兼容端点**，Claude Code 可以直接对接，�
 
 > 前提：已安装 [Python 3.8+](https://www.python.org/downloads/)（安装时勾选 "Add Python to PATH"）
 
-### Windows
+### Windows (推荐方式)
 
-双击运行 `install.bat`，按提示输入 API Key 即可。脚本会自动完成：
+项目包含了一个无黑窗口的图形界面部署工具。
 
-1. 安装 Python 依赖
-2. 安装 Node.js（如未安装）
-3. 安装 Claude Code（使用国内镜像）
-4. 配置 DeepSeek API 并测试连接
+双击运行 **`启动工具.vbs`**。脚本会在后台静默启动极客风的 GUI 界面。在界面中输入 API Key 即可自动完成：
 
-```powershell
-# 或在终端中运行
-.\install.bat
-```
+1. 检测系统环境（Python, Node.js 等）
+2. 自动配置 npm 淘宝镜像并安装 Claude Code
+3. **配置记忆**：自动记忆并加载您上次保存的 DeepSeek API Key 和模型偏好
+4. **会话隔离启动**：点击“⚡ 启动 Claude Code”，工具会为您弹出一个独立的终端并自动注入环境变量，无需配置系统的全局变量。
+
+*(备用选项：如果 `启动工具.vbs` 无法运行，您也可以双击 `install.bat` 运行)*
 
 ### macOS / Linux
 
@@ -85,9 +84,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-### GUI 方式
-
-安装完成后也可使用图形界面：
+### 纯 Python 启动 GUI
 
 ```bash
 python launcher.py
@@ -97,7 +94,7 @@ python launcher.py
 
 ## 详细安装
 
-如需分步手动操作，参考以下流程。
+如需分步手动操作，或深入了解底层逻辑，请参考以下流程。
 
 ### 1. 安装 Python 依赖
 
