@@ -314,6 +314,17 @@ python launcher.py
 
 ## 常见问题
 
+### 已下载过旧版本，如何更新？
+
+本项目曾重写 Git 历史以清除敏感信息，旧版本与远程仓库已分叉，`git pull` 会报错。请执行以下命令强制同步：
+
+```bash
+git fetch origin
+git reset --hard origin/main
+```
+
+> **注意：** 如果你有本地未推送的修改，请先备份再执行上述命令。
+
 ### 如何获取 DeepSeek API Key？
 
 访问 [platform.deepseek.com](https://platform.deepseek.com) 注册账号，在 API Keys 页面创建密钥。
