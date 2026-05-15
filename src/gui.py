@@ -7,8 +7,42 @@ import platform
 import subprocess
 import shutil
 import os
-import sys
 import time
+import tempfile
+import atexit
+
+
+class ToolTip:
+    """鼠标悬停提示"""
+    def __init__(self, widget, text=""):
+        self.widget = widget
+        self.text = text
+        self.tip_window = None
+        widget.bind("<Enter>", self.show)
+        widget.bind("<Leave>", self.hide)
+
+    def update_text(self, text):
+        self.text = text
+
+    def show(self, event=None):
+        if not self.text:
+            return
+        self.hide()
+        x = self.widget.winfo_rootx() + 20
+        y = self.widget.winfo_rooty() + self.widget.winfo_height() + 5
+        tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(True)
+        tw.wm_geometry(f"+{x}+{y}")
+        label = tk.Label(tw, text=self.text, bg="#1e293b", fg="#e2e8f0",
+                         font=("Microsoft YaHei UI", 9), padx=8, pady=4,
+                         relief=tk.SOLID, borderwidth=1)
+        label.pack()
+        self.tip_window = tw
+
+    def hide(self, event=None):
+        if self.tip_window:
+            self.tip_window.destroy()
+            self.tip_window = None
 
 
 class DeployGUI:
@@ -18,7 +52,7 @@ class DeployGUI:
         self.root = root
         self.root.title("Claude Code + DeepSeek 一键部署工具 v0.1.0")
         self.root.geometry("800x850")
-        
+
         self.colors = {
             "bg": "#0B1121",          # 更深的极客蓝黑底色
             "card": "#162032",        # 卡片背景，带微弱蓝调
@@ -49,7 +83,7 @@ class DeployGUI:
         }
 
         self.create_widgets()
-        
+
         # 自动加载已保存的配置
         self.root.after(100, self.load_config)
 
@@ -68,7 +102,7 @@ class DeployGUI:
                     if cfg and "deepseek" in cfg:
                         saved_key = cfg["deepseek"].get("api_key", "")
                         self.api_key_var.set(saved_key)
-                        
+
                         saved_model = cfg["deepseek"].get("model", "自动 (智能选择)")
                         # 如果保存的模型在当前选项中，则设置它
                         models = ["自动 (智能选择)", "deepseek-v4-flash", "deepseek-v4-pro"]
@@ -97,7 +131,7 @@ class DeployGUI:
 
         header = tk.Frame(container, bg=self.colors["bg"])
         header.pack(fill=tk.X, pady=(0, 25))
-        
+
         tk.Label(header, text="Claude Code + DeepSeek", font=self.font_title,
             bg=self.colors["bg"], fg=self.colors["text"]).pack(side=tk.LEFT)
         tk.Label(header, text=" 一键部署工具", font=self.font_subtitle,
@@ -206,6 +240,7 @@ class DeployGUI:
             bg=self.colors["success"], fg="white", activebackground="#059669", activeforeground="white",
             padx=30, pady=10, relief=tk.FLAT, state=tk.DISABLED, cursor="hand2")
         self.launch_btn.pack(side=tk.RIGHT)
+        self._launch_tooltip = ToolTip(self.launch_btn, "请先点击「一键部署环境」安装 Claude Code")
         self.progress = ttk.Progressbar(card, mode='indeterminate')
         self.progress.pack(fill=tk.X, pady=(15, 0))
 
@@ -252,17 +287,17 @@ class DeployGUI:
                 # 优先尝试原始命令，如果 shutil.which 找不到，尝试 .cmd
                 if not shutil.which(command):
                     search_cmd = command + ".cmd"
-        
+
         full_path = shutil.which(search_cmd)
         if not full_path:
             return False, ""
-            
+
         try:
             # 使用 shell=True 增加 Windows 批处理文件的兼容性
             res = subprocess.run(
-                [full_path, args] if args else [full_path], 
-                capture_output=True, 
-                text=True, 
+                [full_path, args] if args else [full_path],
+                capture_output=True,
+                text=True,
                 timeout=10,
                 shell=(platform.system() == "Windows")
             )
@@ -281,11 +316,11 @@ class DeployGUI:
                 sys_path = winreg.QueryValueEx(k, "Path")[0]
             with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Environment") as k:
                 user_path = winreg.QueryValueEx(k, "Path")[0]
-            
+
             # 展开发生在注册表中的变量如 %SystemRoot%
             sys_path = os.path.expandvars(sys_path)
             user_path = os.path.expandvars(user_path)
-            
+
             os.environ["PATH"] = sys_path + ";" + user_path
             self.log("已刷新系统环境变量 PATH")
         except Exception:
@@ -296,27 +331,26 @@ class DeployGUI:
     def detect_environment(self):
         self.log("正在初始化系统环境检测...")
         self.update_env_status("python", True, platform.python_version())
-        
-        # 针对 Windows 的特殊处理逻辑
-        is_win = (platform.system() == "Windows")
-        
+
         # Node.js
         ok, v = self.check_command("node", "--version")
         self.update_env_status("nodejs", ok, v)
-        
+
         # npm (Windows 下通常为 npm.cmd)
         ok, v = self.check_command("npm", "--version")
         self.update_env_status("npm", ok, v)
-        
+
         # Claude (Windows 下通常为 claude.cmd)
         ok, v = self.check_command("claude", "--version")
         self.update_env_status("claude", ok, v)
-        
+
         claude_ok = self.check_command("claude")[0]
         if claude_ok:
             self.launch_btn.config(state=tk.NORMAL)
+            self._launch_tooltip.update_text("")
             self.log("环境就绪，可以直接启动 Claude Code", "SUCCESS")
         else:
+            self._launch_tooltip.update_text("未检测到 Claude Code，请先点击「一键部署环境」")
             self.log("提示：Claude Code 未安装，请点击「一键部署环境」")
 
     # --- 部署逻辑 ---
@@ -474,9 +508,10 @@ class DeployGUI:
             self.root.after(0, lambda: messagebox.showinfo(
                 "测试成功", "API Key 有效，网络连接正常。"))
         except Exception as e:
-            self.log("验证失败: {}".format(e), "ERROR")
-            self.root.after(0, lambda: messagebox.showerror(
-                "测试失败", "无法连接到 API: {}".format(e)))
+            err = str(e)
+            self.log("验证失败: {}".format(err), "ERROR")
+            self.root.after(0, lambda err=err: messagebox.showerror(
+                "测试失败", "无法连接到 API: {}".format(err)))
 
     # --- 启动 Claude Code ---
 
@@ -486,7 +521,7 @@ class DeployGUI:
         if "自动" in model:
             model = "deepseek-v4-flash"
         base_url = "https://api.deepseek.com/anthropic"
-        
+
         self.log(f"正在启动终端并注入环境变量 (模型: {model})...")
 
         if platform.system() == "Windows":
@@ -496,26 +531,30 @@ class DeployGUI:
                 # 尝试再次刷新 PATH 后检测
                 self._refresh_path()
                 claude_path = shutil.which("claude") or shutil.which("claude.cmd")
-            
+
             if not claude_path:
                 self.log("找不到 claude 命令，请确认已安装 @anthropic-ai/claude-code", "ERROR")
                 messagebox.showerror("启动失败", "在您的 PATH 中找不到 'claude' 命令。\n\n请尝试重新点击「一键部署环境」。")
                 return
 
-            # 使用更健壮的 start 命令格式，并对环境变量加双引号
-            # 注意: start 的第一个双引号会被视为窗口标题
-            terminal_cmd = (
-                f'start "Claude Code + DeepSeek" cmd /k '
-                f'"set \"ANTHROPIC_API_KEY={key}\" && '
-                f'set \"ANTHROPIC_BASE_URL={base_url}\" && '
-                f'echo ------------------------------------------ && '
-                f'echo 环境已就绪！当前模型: {model} && '
-                f'echo ------------------------------------------ && '
-                f'\"{claude_path}\" --model {model}"'
+            # 写入临时 .bat 文件避免 cmd 引号嵌套问题
+            bat_content = (
+                f'@echo off\r\n'
+                f'set "ANTHROPIC_API_KEY={key}"\r\n'
+                f'set "ANTHROPIC_BASE_URL={base_url}"\r\n'
+                f'echo ------------------------------------------\r\n'
+                f'echo 环境已就绪！当前模型: {model}\r\n'
+                f'echo ------------------------------------------\r\n'
+                f'"{claude_path}" --model {model}\r\n'
             )
-            subprocess.Popen(terminal_cmd, shell=True)
+            fd, bat_path = tempfile.mkstemp(suffix=".bat", prefix="claude_launch_")
+            with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
+                f.write(bat_content)
+            atexit.register(lambda p=bat_path: os.path.exists(p) and os.unlink(p))
+
+            subprocess.Popen(f'start "Claude Code + DeepSeek" cmd /k ""{bat_path}""', shell=True)
             self.log("终端已启动", "SUCCESS")
-            
+
         elif platform.system() == "Darwin":
             script = ('tell application "Terminal" to do script '
                       '"export ANTHROPIC_API_KEY=\'{}\' && export ANTHROPIC_BASE_URL=\'{}\' '
@@ -553,3 +592,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

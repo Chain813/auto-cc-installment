@@ -47,19 +47,32 @@ class APIConfig:
         self.config = self.load_config()
 
     def load_config(self) -> Dict[str, Any]:
-        """加载配置文件"""
-        if not self.config_path.exists():
-            return self.DEFAULT_CONFIG.copy()
+        """加载配置文件，缺失的 key 用默认值填充"""
+        config = self._deep_merge(self.DEFAULT_CONFIG, self._load_raw())
+        return config
 
+    def _load_raw(self) -> Dict[str, Any]:
+        """从磁盘读取原始配置"""
+        if not self.config_path.exists():
+            return {}
         try:
             with open(self.config_path, "r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
-                if config is None:
-                    return self.DEFAULT_CONFIG.copy()
-                return config
+                return config if isinstance(config, dict) else {}
         except Exception as e:
             print_error(f"配置文件加载失败: {e}")
-            return self.DEFAULT_CONFIG.copy()
+            return {}
+
+    @staticmethod
+    def _deep_merge(defaults: Dict, overrides: Dict) -> Dict:
+        """递归合并：overrides 覆盖 defaults 的对应 key，缺失 key 保留 defaults"""
+        result = defaults.copy()
+        for key, value in overrides.items():
+            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                result[key] = APIConfig._deep_merge(result[key], value)
+            else:
+                result[key] = value
+        return result
 
     def save_config(self) -> bool:
         """保存配置文件"""

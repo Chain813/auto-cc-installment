@@ -56,3 +56,6 @@ start_claude_deepseek.bat
 start_claude_deepseek.sh
 launch_claude.bat
 launch_claude.sh
+
+# Claude Code local settings
+.claude/

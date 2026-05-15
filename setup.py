@@ -4,8 +4,8 @@ setup(
     name="claude-deepseek",
     version="0.1.0",
     description="Claude Code 自动化安装 + DeepSeek API 接入工具",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Chain",
+    author_email="Chain813@users.noreply.github.com",
     packages=find_packages(),
     install_requires=[
         "pyyaml>=6.0",
