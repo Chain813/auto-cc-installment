@@ -15,8 +15,9 @@ deepseek:
   model: "deepseek-v4-flash"
 
   # 可用模型列表
-  # deepseek-v4-flash: 快速模型（推荐日常使用）
-  # deepseek-v4-pro: 专业模型（复杂任务）
+  models:
+    flash: "deepseek-v4-flash"   # 快速模型（推荐日常使用）
+    pro: "deepseek-v4-pro"       # 专业模型（复杂任务）
 
 # Claude Code 配置（直接使用 DeepSeek 作为后端）
 claude_code:

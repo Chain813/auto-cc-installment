@@ -1,7 +1,7 @@
 # 测试报告
 
 **项目名称**: Claude Code + DeepSeek API 自动化工具
-**测试日期**: 2026-05-05
+**测试日期**: 2026-05-15
 **测试环境**: Windows 11, Python 3.14.2
 **测试结论**: ✅ 全部通过
 
@@ -16,7 +16,7 @@
 | test_os_detection | ✅ 通过 | 正确检测操作系统类型 |
 | test_nodejs_check | ✅ 通过 | Node.js 检测功能正常 |
 | test_npm_check | ✅ 通过 | npm 检测功能正常 |
-| test_config_load | ✅ 通过 | 配置文件加载正常 |
+| test_config_load | ✅ 通过 | 配置文件加载正常（深度合并默认值） |
 | test_config_defaults | ✅ 通过 | 默认配置值正确 |
 
 **测试结果**: 5/5 通过
@@ -57,7 +57,7 @@
 DeepSeek API 配置:
   API Key: 未设置
   Base URL: https://api.deepseek.com/v1
-  模型: deepseek-chat
+  模型: deepseek-v4-flash
 
 Claude Code 配置:
   安装路径:
@@ -110,22 +110,28 @@ Commands:
 |------|------|------|
 | README.md | ✅ 存在 | 项目说明文档 |
 | NETWORK.md | ✅ 存在 | 网络说明文档 |
+| SECURITY.md | ✅ 存在 | 安全说明 |
 | requirements.txt | ✅ 存在 | Python 依赖 |
 | setup.py | ✅ 存在 | 包安装配置 |
 | .gitignore | ✅ 存在 | Git 忽略配置 |
+| .flake8 | ✅ 存在 | flake8 lint 配置 |
+| 启动工具.vbs | ✅ 存在 | Windows 静默启动器 |
 | config/config.yaml.example | ✅ 存在 | 配置模板 |
 | src/__init__.py | ✅ 存在 | 包初始化 |
 | src/main.py | ✅ 存在 | 主程序入口 |
 | src/installer.py | ✅ 存在 | 安装模块 |
 | src/api_config.py | ✅ 存在 | API 配置模块 |
 | src/deepseek_client.py | ✅ 存在 | DeepSeek 客户端 |
+| src/gui.py | ✅ 存在 | GUI 界面 |
+| src/model_selector.py | ✅ 存在 | 智能模型选择器 |
 | src/utils.py | ✅ 存在 | 工具函数 |
 | scripts/install.sh | ✅ 存在 | Linux/macOS 安装脚本 |
 | scripts/install.ps1 | ✅ 存在 | Windows 安装脚本 |
+| scripts/cli_installer.py | ✅ 存在 | CLI 安装器 |
 | tests/test_installation.py | ✅ 存在 | 安装测试 |
 | tests/test_network.py | ✅ 存在 | 网络测试 |
 
-**文件完整性**: 16/16 完整
+**文件完整性**: 22/22 完整
 
 ---
 
@@ -161,7 +167,7 @@ Commands:
 - 单元测试: **9/9** (100%)
 - CLI 命令: **3/3** (100%)
 - 网络测试: **2/2** (100%)
-- 文件完整性: **16/16** (100%)
+- 文件完整性: **22/22** (100%)
 
 ### 总体结论
 
@@ -184,4 +190,4 @@ Commands:
 ---
 
 **测试执行人**: Claude Code
-**测试完成时间**: 2026-05-05
+**测试完成时间**: 2026-05-15

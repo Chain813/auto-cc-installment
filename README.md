@@ -186,23 +186,26 @@ auto-cc-installment/
 ├── install.bat                 # Windows 一键安装脚本（双击运行）
 ├── install.sh                  # macOS/Linux 一键安装脚本
 ├── launcher.py                 # GUI 启动入口
+├── 启动工具.vbs                 # Windows 静默启动器 (pythonw)
 ├── src/                        # 核心源码
 │   ├── __init__.py
 │   ├── main.py                 # CLI 入口 (Click 命令组)
 │   ├── installer.py            # Claude Code 安装器
-│   ├── api_config.py           # API 配置管理 (YAML)
+│   ├── api_config.py           # API 配置管理 (YAML，深度合并默认值)
 │   ├── deepseek_client.py      # DeepSeek API 客户端 (OpenAI SDK)
 │   ├── model_selector.py       # 智能模型选择器
-│   ├── gui.py                  # GUI 界面 (tkinter)
+│   ├── gui.py                  # GUI 界面 (tkinter，含 ToolTip)
 │   └── utils.py                # 工具函数
 ├── scripts/                    # 辅助安装脚本
 │   ├── install.sh              # Linux/macOS npm 安装脚本
-│   └── install.ps1             # Windows npm 安装脚本
+│   ├── install.ps1             # Windows npm 安装脚本
+│   └── cli_installer.py        # CLI 安装器
 ├── tests/                      # 测试
 │   ├── test_installation.py    # 安装模块测试
 │   └── test_network.py         # 网络连接测试
-├── config/                     # 配置目录 (运行时生成)
-│   └── config.yaml             # 用户配置文件
+├── config/                     # 配置目录
+│   └── config.yaml.example     # 配置模板（运行时生成 config.yaml）
+├── .flake8                     # flake8 lint 配置
 ├── requirements.txt            # Python 依赖
 ├── requirements-lock.txt       # 依赖锁定版本
 ├── .github/workflows/          # GitHub Actions CI
@@ -228,10 +231,17 @@ deepseek:
   base_url_openai: "https://api.deepseek.com/v1"
   base_url_anthropic: "https://api.deepseek.com/anthropic"
   model: "deepseek-v4-flash"
+  models:
+    flash: "deepseek-v4-flash"
+    pro: "deepseek-v4-pro"
 
 claude_code:
   base_url: "https://api.deepseek.com/anthropic"
   model: "deepseek-v4-flash"
+
+claude:
+  install_path: ""
+  auto_update: true
 
 npm:
   registry: "https://registry.npmmirror.com"
